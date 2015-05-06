@@ -3,8 +3,11 @@ package Pokemon;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.HashMap;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,8 +21,15 @@ import java.awt.image.BufferedImage;
  */
 public class VentanaPokedex extends javax.swing.JFrame {
 
+        //conectar a la base de datos
+    private Statement estado;
+    private ResultSet resultadoConsulta;
+    private Connection conexion;
     //private BufferedImage buffer;
     //private Image
+    
+    //hashmap para almacenar el resultado
+    HashMap<String,PokemonValues> listaPokemon = new HashMap();
     
     Pokemon poke = new Pokemon();
     /**
@@ -28,8 +38,30 @@ public class VentanaPokedex extends javax.swing.JFrame {
     public VentanaPokedex() {
         initComponents();
         poke.setPokemonAnchura(jPanel1.getWidth());
-        poke.setPokemonAltura(jPanel1.getHeight());    
+        poke.setPokemonAltura(jPanel1.getHeight());  
+        
+        //Conexion a base de datos
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+            conexion = DriverManager.getConnection("jdbc:mysql://127.0.0.1/test", "root", "");
+            estado = conexion.createStatement();
+            resultadoConsulta = estado.executeQuery("Select * from pokemon");
+            
+            while(resultadoConsulta.next()){
+                PokemonValues pkm = new PokemonValues();
+                pkm.nombre = resultadoConsulta.getString(2);
+                pkm.generation_id = resultadoConsulta.getInt(5);
+                pkm.evolution_chain_id = resultadoConsulta.getInt(6);
+                pkm.species= resultadoConsulta.getString(12);
+            
+            listaPokemon.put(resultadoConsulta.getString(1), pkm);
+            }
+        }
+        catch (Exception e){
+        }
+        /////////////////////////////////////////////
     }
+
     
     private void dibujaPokemon(){
     Graphics2D g2 = (Graphics2D) jPanel1.getGraphics();
@@ -56,8 +88,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jLabel2 = new javax.swing.JLabel();
 
         jButton1.setText("Anterior");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -91,39 +122,44 @@ public class VentanaPokedex extends javax.swing.JFrame {
         );
 
         jLabel1.setFont(new java.awt.Font("Showcard Gothic", 0, 14)); // NOI18N
-        jLabel1.setText("Nº:0");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel1.setText("Nº:1");
         jLabel1.setToolTipText("");
+
+        jLabel2.setFont(new java.awt.Font("Showcard Gothic", 0, 14)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("BULBASAUR");
+        jLabel2.setToolTipText("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(87, 87, 87)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1)))
-                .addGap(93, 93, 93))
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(73, 73, 73)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1)
+                .addGap(16, 16, 16)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jButton1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(76, Short.MAX_VALUE))
         );
 
         pack();
@@ -131,19 +167,29 @@ public class VentanaPokedex extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         poke.contador--;
-        poke.setFila(poke.contador / 31);
-        poke.setColumna(poke.contador %31);
+        poke.setFila((poke.contador-1) / 31);
+        poke.setColumna((poke.contador-1) %31);
         dibujaPokemon();
         jLabel1.setText("Nº:"+poke.contador);
+        PokemonValues pkm = listaPokemon.get(String.valueOf(poke.contador));
+        if(pkm!=null)
+            jLabel2.setText(pkm.nombre);
+        else
+            jLabel2.setText("NOT FOUND");
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         poke.contador++;
-        poke.setFila(poke.contador / 31);
-        poke.setColumna(poke.contador %31);
+        poke.setFila((poke.contador-1) / 31);
+        poke.setColumna((poke.contador-1) %31);
         dibujaPokemon();
         jLabel1.setText("Nº:"+poke.contador);
+        PokemonValues pkm = listaPokemon.get(String.valueOf(poke.contador));
+        if(pkm!=null)
+            jLabel2.setText(pkm.nombre);
+        else
+            jLabel2.setText("NOT FOUND");
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -185,6 +231,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

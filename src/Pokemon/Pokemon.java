@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
  * @author xp
  */
 public class Pokemon {
-    public int contador = 0;
+    public int contador = 1;
     public int fila = 0;
     public int columna = 0;
     private int pokemonAnchura;
