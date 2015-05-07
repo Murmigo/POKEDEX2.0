@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
 
 /**
  *
@@ -27,13 +30,21 @@ public class Pokemon {
     private int y = 0;
     
     public Image pokeImagen;
+    Clip theme1;
     public Pokemon()
     {
-     
+        try {
+            
+        } catch (Exception ex) {
+        }
+            
         try {
             pokeImagen = ImageIO.read((getClass().getResource("black-white.png")));
-        } catch (IOException ex) {
-            Logger.getLogger(Pokemon.class.getName()).log(Level.SEVERE, null, ex);
+            theme1 = AudioSystem.getClip();
+            theme1.open(AudioSystem.getAudioInputStream(getClass().getResource("Kecleon.mp3")));
+             //theme2 = AudioSystem.getClip();
+            //theme2.open(AudioSystem.getAudioInputStream(getClass().getResource("sonidos/Kecleon.mp3")));
+        } catch (Exception ex) {
         }
         
     }
