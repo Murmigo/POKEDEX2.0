@@ -31,6 +31,7 @@ public class Pokemon {
     
     public Image pokeImagen;
     Clip theme1;
+    Clip theme2;
     public Pokemon()
     {
         try {
@@ -41,9 +42,9 @@ public class Pokemon {
         try {
             pokeImagen = ImageIO.read((getClass().getResource("black-white.png")));
             theme1 = AudioSystem.getClip();
-            theme1.open(AudioSystem.getAudioInputStream(getClass().getResource("Kecleon.mp3")));
-             //theme2 = AudioSystem.getClip();
-            //theme2.open(AudioSystem.getAudioInputStream(getClass().getResource("sonidos/Kecleon.mp3")));
+            theme1.open(AudioSystem.getAudioInputStream(getClass().getResource("menu.wav")));
+             theme2 = AudioSystem.getClip();
+            theme2.open(AudioSystem.getAudioInputStream(getClass().getResource("Kecleon.wav")));
         } catch (Exception ex) {
         }
         
