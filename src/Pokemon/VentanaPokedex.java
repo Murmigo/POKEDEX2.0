@@ -119,6 +119,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jButton12 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
 
         jButton1.setFont(new java.awt.Font("Wide Latin", 0, 11)); // NOI18N
         jButton1.setText("Anterior");
@@ -204,6 +205,13 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jButton12.setText("BUSCAR");
 
         jButton13.setText("INTRO");
+        jButton13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton13ActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("jLabel5");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -242,7 +250,10 @@ public class VentanaPokedex extends javax.swing.JFrame {
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jButton10)
                                             .addComponent(jButton7)))
-                                    .addComponent(jButton12))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jButton12)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel5)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -302,8 +313,10 @@ public class VentanaPokedex extends javax.swing.JFrame {
                                     .addComponent(jButton10))))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jButton13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
 
@@ -343,16 +356,27 @@ public class VentanaPokedex extends javax.swing.JFrame {
        if(contadorABC > 3 || contadorABC < 0)
        {
            contadorABC = 1;
-       }else if(contadorABC == 1){
+       }
+       if(contadorABC == 1){
            letra = 'A';   
        }else if(contadorABC == 2){
            letra = 'B';   
        } else if(contadorABC == 3){
            letra = 'C';   
        }
-       jLabel4.setText(jLabel4.getText().substring(numeroLetras_contador)+letra);
+       jLabel5.setText(""+letra);
        
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        if(numeroLetras_contador == 0){
+            numeroLetras_contador++;
+            jLabel4.setText(jLabel5.getText());
+        } else{
+            numeroLetras_contador++;
+            jLabel4.setText(jLabel4.getText() + jLabel5.getText());
+        }
+    }//GEN-LAST:event_jButton13ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -407,6 +431,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
