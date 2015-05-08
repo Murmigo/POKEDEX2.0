@@ -52,8 +52,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         initComponents();
         getContentPane().setBackground(Color.RED);
         
-        poke.setPokemonAnchura(jPanel1.getWidth());
-        poke.setPokemonAltura(jPanel1.getHeight()); 
+ 
         poke.theme1.loop(1000);
         poke.theme1.start();
 
@@ -71,24 +70,59 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 pkm.generation_id = resultadoConsulta.getInt(5);
                 pkm.evolution_chain_id = resultadoConsulta.getInt(6);
                 pkm.species= resultadoConsulta.getString(12);
+                pkm.height =resultadoConsulta.getInt(10);
+                pkm.weight = resultadoConsulta.getInt(11);
+                pkm.habitat = resultadoConsulta.getString(15);
             
             listaPokemon.put(resultadoConsulta.getString(1), pkm);
             }
         }
         catch (Exception e){
         }
+        
+        
         /////////////////////////////////////////////
     }
 
-    
+    private int buscarEvolucion(PokemonValues pk)
+    {
+        int contador= 0;
+        boolean encontrado = false;
+        PokemonValues pkm = new PokemonValues();
+         
+         while(encontrado == false && contador< 649)
+        {
+            pkm = listaPokemon.get(String.valueOf(contador));
+            if(pkm!=null){
+                if(pk.evolution_chain_id == pkm.evolution_chain_id && !pk.nombre.equalsIgnoreCase(pkm.nombre)){
+                    encontrado = true;
+                }
+                else
+                    contador++;
+            }else 
+                contador++;
+        }
+             
+         return contador-1;
+    }
     private void dibujaPokemon(){
     Graphics2D g2 = (Graphics2D) jPanel1.getGraphics();
     g2.setColor(Color.BLACK);
     g2.fillRect(0,0,jPanel1.getWidth(),jPanel1.getHeight());
+    poke.setPokemonAnchura(jPanel1.getWidth());
+    poke.setPokemonAltura(jPanel1.getHeight());
     poke.dibujaPokemon(g2);
     //jPanel1.setBorder(null);
     }
-    
+    private void dibujaEvolucion(Pokemon evo)
+    {
+    Graphics2D g2 = (Graphics2D) jPanel3.getGraphics();
+    g2.setColor(Color.BLACK);
+    g2.fillRect(0,0,jPanel3.getWidth(),jPanel3.getHeight());
+    evo.setPokemonAnchura(jPanel3.getWidth());
+    evo.setPokemonAltura(jPanel3.getHeight());
+    evo.dibujaEvo(g2);
+    }
     @Override
     public void paint(Graphics g){
     super.paintComponents(g);
@@ -98,12 +132,33 @@ public class VentanaPokedex extends javax.swing.JFrame {
         poke.setFila((numeroPokemon) / 31);
         poke.setColumna((numeroPokemon) %31);
         dibujaPokemon();
-        jLabel1.setText("Nº:"+poke.contador);
-        PokemonValues pkm = listaPokemon.get(String.valueOf(poke.contador));
-        if(pkm!=null)
-            jLabel3.setText(pkm.nombre);
+        jLabel1.setText("Nº:"+(numeroPokemon+1));
+        PokemonValues pkm = listaPokemon.get(String.valueOf(numeroPokemon+1));
+        if(pkm!=null){
+           muestraDatosPokemon(pkm);
+           poke.setFila( buscarEvolucion(pkm) /31);
+           poke.setColumna( buscarEvolucion(pkm) %31);
+           dibujaEvolucion(poke);  
+        }
         else
-            jLabel3.setText("NOT FOUND");
+            muestraNoEncontrado();
+    }
+    private void muestraNoEncontrado()
+    {
+       jLabel3.setText("NOT FOUND");
+       jLabel6.setText("SPECIE: NOT FOUND");
+       jLabel7.setText("HEIGHT: NOT FOUND");
+       jLabel8.setText("WEIGHT: NOT FOUND");
+       jLabel9.setText("HABITAT: NOT FOUND");
+       
+    }
+    private void muestraDatosPokemon(PokemonValues pkm)
+    {
+       jLabel3.setText(""+pkm.nombre);
+       jLabel7.setText("SPECIE:         "+pkm.species);
+       jLabel8.setText("HEIGHT:         "+pkm.height +" m");
+       jLabel9.setText("WEIGHT:         "+pkm.weight+ " g");
+       jLabel6.setText("HABITAT:        " +pkm.habitat);
     }
     private void compruebaLimitesListaPokemon(){
             if(poke.contador <=0)
@@ -123,6 +178,17 @@ public class VentanaPokedex extends javax.swing.JFrame {
     contadorYZ =0;
     
     return contadorUsado;
+    }
+    
+    private void suenaBoton()
+    {
+        poke.botonPulsar.setFramePosition(0);
+        poke.botonPulsar.start();
+    }
+        private void suenaBeep()
+    {
+        poke.word.setFramePosition(0);
+        poke.word.start();
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -154,10 +220,15 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jButton14 = new javax.swing.JButton();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
-        jButton19 = new javax.swing.JButton();
         jButton18 = new javax.swing.JButton();
         jButton17 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 0, 0));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -183,23 +254,25 @@ public class VentanaPokedex extends javax.swing.JFrame {
         getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 390, 50, 20));
 
         jLabel1.setFont(new java.awt.Font("Showcard Gothic", 0, 16)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Nº:1");
         jLabel1.setToolTipText("");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, -1, -1));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, 280, -1));
 
         jLabel2.setFont(new java.awt.Font("Showcard Gothic", 0, 48)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(153, 51, 0));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("POKÉDEX");
         jLabel2.setToolTipText("");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 257, 89));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 257, 89));
 
         jLabel3.setFont(new java.awt.Font("Showcard Gothic", 0, 24)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel3.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("BULBASAUR");
         jLabel3.setToolTipText("");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 40, 200, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 40, 290, -1));
 
         jButton3.setBackground(new java.awt.Color(102, 153, 255));
         jButton3.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -209,7 +282,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 260, -1, -1));
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 350, -1, -1));
 
         jButton4.setBackground(new java.awt.Color(102, 153, 255));
         jButton4.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -219,7 +292,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton4ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 260, -1, -1));
+        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 350, -1, -1));
 
         jButton5.setBackground(new java.awt.Color(102, 153, 255));
         jButton5.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -229,7 +302,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton5ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 260, -1, -1));
+        getContentPane().add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 350, -1, -1));
 
         jButton6.setBackground(new java.awt.Color(102, 153, 255));
         jButton6.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -239,7 +312,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton6ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 290, 50, -1));
+        getContentPane().add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 380, 50, -1));
 
         jButton7.setBackground(new java.awt.Color(102, 153, 255));
         jButton7.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -249,7 +322,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton7ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 260, -1, -1));
+        getContentPane().add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 350, -1, -1));
 
         jButton8.setBackground(new java.awt.Color(102, 153, 255));
         jButton8.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -259,7 +332,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton8ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 260, -1, -1));
+        getContentPane().add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 350, -1, -1));
 
         jButton9.setBackground(new java.awt.Color(102, 153, 255));
         jButton9.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -269,7 +342,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton9ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 290, 50, -1));
+        getContentPane().add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 380, 50, -1));
 
         jButton10.setBackground(new java.awt.Color(102, 153, 255));
         jButton10.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -279,7 +352,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton10ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton10, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 290, 50, -1));
+        getContentPane().add(jButton10, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 380, 50, -1));
 
         jButton11.setBackground(new java.awt.Color(102, 153, 255));
         jButton11.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -289,7 +362,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton11ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton11, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 290, 50, -1));
+        getContentPane().add(jButton11, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 380, 50, -1));
 
         jLabel4.setBackground(new java.awt.Color(0, 255, 0));
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -298,7 +371,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jLabel4.setText("POKÉMON");
         jLabel4.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(51, 51, 0)));
         jLabel4.setOpaque(true);
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 199, 290, 40));
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 290, 290, 40));
 
         jButton12.setBackground(new java.awt.Color(255, 102, 51));
         jButton12.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -308,7 +381,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton12ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton12, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 330, 90, 20));
+        getContentPane().add(jButton12, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 420, 90, 20));
 
         jButton13.setBackground(new java.awt.Color(102, 153, 255));
         jButton13.setFont(new java.awt.Font("Tahoma", 1, 6)); // NOI18N
@@ -318,7 +391,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton13ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton13, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 290, 50, -1));
+        getContentPane().add(jButton13, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 380, 50, -1));
 
         jLabel5.setBackground(new java.awt.Color(0, 255, 0));
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -326,7 +399,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(51, 51, 0)));
         jLabel5.setOpaque(true);
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 320, 40, 30));
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 410, 40, 30));
 
         jButton14.setBackground(new java.awt.Color(0, 204, 0));
         jButton14.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -336,7 +409,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton14ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton14, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 330, 80, 20));
+        getContentPane().add(jButton14, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 420, 80, 20));
 
         jButton15.setBackground(new java.awt.Color(0, 0, 0));
         jButton15.addActionListener(new java.awt.event.ActionListener() {
@@ -354,19 +427,20 @@ public class VentanaPokedex extends javax.swing.JFrame {
         });
         getContentPane().add(jButton16, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 340, 20, 50));
 
-        jButton19.setBackground(new java.awt.Color(255, 255, 0));
-        jButton19.setText("MUSICA");
-        jButton19.addActionListener(new java.awt.event.ActionListener() {
+        jButton18.setBackground(new java.awt.Color(0, 204, 0));
+        jButton18.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton19ActionPerformed(evt);
+                jButton18ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 370, 100, 80));
-
-        jButton18.setBackground(new java.awt.Color(0, 204, 0));
         getContentPane().add(jButton18, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 340, 50, 10));
 
         jButton17.setBackground(new java.awt.Color(255, 102, 51));
+        jButton17.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton17ActionPerformed(evt);
+            }
+        });
         getContentPane().add(jButton17, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 340, 50, 10));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 0, 0)));
@@ -387,18 +461,71 @@ public class VentanaPokedex extends javax.swing.JFrame {
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 240, 240));
 
+        jLabel6.setFont(new java.awt.Font("Showcard Gothic", 1, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel6.setText("HABITAT: ");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 230, 290, 30));
+
+        jLabel7.setFont(new java.awt.Font("Showcard Gothic", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel7.setText("SPECIE: ");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 90, 290, 30));
+
+        jLabel8.setFont(new java.awt.Font("Showcard Gothic", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel8.setText("HEIGHT: ");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 130, 290, 30));
+
+        jLabel9.setFont(new java.awt.Font("Showcard Gothic", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel9.setText("WEIGHT: ");
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 290, 30));
+
+        jPanel2.setBackground(new java.awt.Color(0, 255, 0));
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(3, 3, 3, 3, new java.awt.Color(51, 51, 0)));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 304, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 264, Short.MAX_VALUE)
+        );
+
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 0, 310, 270));
+
+        jPanel3.setBorder(new javax.swing.border.MatteBorder(null));
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 370, -1, -1));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 //CRUCETA IZQUIERDA
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         poke.contador-=10;
         compruebaLimitesListaPokemon();
+        suenaBoton();
         mostrarPokemon(poke.contador-1);   
     }//GEN-LAST:event_jButton1ActionPerformed
 //CRUCETA DERECHA
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         poke.contador+=10;
         compruebaLimitesListaPokemon();
+        suenaBoton();
         mostrarPokemon(poke.contador-1);   
     }//GEN-LAST:event_jButton2ActionPerformed
 //Boton ABC
@@ -417,7 +544,6 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'C';   
        }
        jLabel5.setText(""+letra);
-       
        contadorABC = contadoresACero(contadorABC);
     }//GEN-LAST:event_jButton3ActionPerformed
 //BOTON DE INTRO
@@ -448,7 +574,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'F';   
        }
        jLabel5.setText(""+letra);
-       
+       suenaBeep();
        contadorDEF = contadoresACero(contadorDEF);
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -467,7 +593,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'I';   
        }
        jLabel5.setText(""+letra);
-       
+       suenaBeep();
        contadorGHI = contadoresACero(contadorGHI);
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -486,7 +612,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'L';   
        }
        jLabel5.setText(""+letra);
-       
+       suenaBeep();
        contadorJKL = contadoresACero(contadorJKL);
     }//GEN-LAST:event_jButton8ActionPerformed
 
@@ -505,7 +631,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'O';   
        }
        jLabel5.setText(""+letra);
-       
+       suenaBeep();
        contadorMNO = contadoresACero(contadorMNO);
     }//GEN-LAST:event_jButton7ActionPerformed
 
@@ -524,7 +650,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'R';   
        }
        jLabel5.setText(""+letra);
-       
+       suenaBeep();       
        contadorPQR = contadoresACero(contadorPQR);
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -543,7 +669,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'U';   
        }
        jLabel5.setText(""+letra);
-       
+        suenaBeep();      
        contadorSTU = contadoresACero(contadorSTU);
     }//GEN-LAST:event_jButton11ActionPerformed
 
@@ -562,7 +688,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'X';   
        }
        jLabel5.setText(""+letra);
-       
+       suenaBeep();       
        contadorVWX = contadoresACero(contadorVWX);
     }//GEN-LAST:event_jButton10ActionPerformed
 
@@ -579,7 +705,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'Z';   
        }
        jLabel5.setText(""+letra);
-       
+       suenaBeep();       
        contadorYZ = contadoresACero(contadorYZ);
     }//GEN-LAST:event_jButton9ActionPerformed
 //REINICIAR
@@ -592,51 +718,69 @@ public class VentanaPokedex extends javax.swing.JFrame {
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
         poke.contador--;
         compruebaLimitesListaPokemon();
+        suenaBoton();
         mostrarPokemon(poke.contador-1);   
     }//GEN-LAST:event_jButton16ActionPerformed
 //CRUCETA ABAJO
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
         poke.contador++;
         compruebaLimitesListaPokemon();
+        suenaBoton();
         mostrarPokemon(poke.contador-1);
     }//GEN-LAST:event_jButton15ActionPerformed
-//Cambia la musica
-    private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
-        if(poke.theme1.isRunning()){
-            poke.theme1.stop();
-            poke.theme1.setFramePosition(0);
-            poke.theme2.loop(1000);
-            poke.theme2.start();  
-        }else if(poke.theme2.isRunning())
-        {
-            poke.theme2.stop();
-            poke.theme2.setFramePosition(0);
-            poke.theme1.loop(1000);
-            poke.theme1.start();       
-        }
-    }//GEN-LAST:event_jButton19ActionPerformed
+
 //BUSCAR
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        int contador =0;
+        int contador =1;
         boolean encontrado = false;
         String pokemonABuscar = jLabel4.getText();
         PokemonValues pkm = new PokemonValues();
         
-        while(!encontrado && contador!= 649)
+        while(encontrado == false && contador< 649)
         {
             pkm = listaPokemon.get(String.valueOf(contador));
-            if(pokemonABuscar.equals(pkm.nombre) && pkm.nombre != null)
+            if(pkm!=null){
+            if(pokemonABuscar.equalsIgnoreCase(pkm.nombre))
                 encontrado = true;
-            else 
+            else
+                contador++;
+            }else 
                 contador++;
         }
         if(encontrado){
             mostrarPokemon(contador-1);
+            jLabel4.setText("POKÉMON");
         }else 
             jLabel4.setText("NO ENCONTRADO");
+            numeroLetras_contador = 0;
         
                 
     }//GEN-LAST:event_jButton12ActionPerformed
+//QuitarMusica
+    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
+        if(poke.theme1.isRunning()){
+            poke.theme1.setFramePosition(0);
+            poke.theme1.stop();
+        }else
+        if(poke.theme2.isRunning()){
+            poke.theme2.setFramePosition(0);
+            poke.theme2.stop();
+        }else
+            poke.theme1.start();
+        
+    }//GEN-LAST:event_jButton17ActionPerformed
+
+    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
+        if(poke.theme1.isRunning()){
+            poke.theme1.setFramePosition(0);
+            poke.theme1.stop();
+            poke.theme2.start();
+        } else if(poke.theme2.isRunning()){
+            poke.theme2.setFramePosition(0);
+            poke.theme2.stop();
+            poke.theme1.start();
+        }
+    }//GEN-LAST:event_jButton18ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -684,7 +828,6 @@ public class VentanaPokedex extends javax.swing.JFrame {
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
-    private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -698,6 +841,12 @@ public class VentanaPokedex extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     // End of variables declaration//GEN-END:variables
 }

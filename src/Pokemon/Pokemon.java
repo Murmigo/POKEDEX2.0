@@ -32,6 +32,8 @@ public class Pokemon {
     public Image pokeImagen;
     Clip theme1;
     Clip theme2;
+    Clip botonPulsar;
+    Clip word;
     public Pokemon()
     {
         try {
@@ -45,6 +47,10 @@ public class Pokemon {
             theme1.open(AudioSystem.getAudioInputStream(getClass().getResource("menu.wav")));
              theme2 = AudioSystem.getClip();
             theme2.open(AudioSystem.getAudioInputStream(getClass().getResource("Kecleon.wav")));
+            botonPulsar = AudioSystem.getClip();
+            botonPulsar.open(AudioSystem.getAudioInputStream(getClass().getResource("button.wav")));
+            word = AudioSystem.getClip();
+            word.open(AudioSystem.getAudioInputStream(getClass().getResource("buttonword.wav")));
         } catch (Exception ex) {
         }
         
@@ -54,7 +60,10 @@ public class Pokemon {
     {
         g2.drawImage(pokeImagen,x,y,pokemonAnchura,pokemonAltura,columna*96,fila*96,columna*96+96,fila*96+96,null);                              
     }
-
+        public void dibujaEvo(Graphics2D g2)
+        {
+        g2.drawImage(pokeImagen,0,0,pokemonAnchura,pokemonAltura,columna*96,fila*96,columna*96+96,fila*96+96,null);
+        }
     public int getPokemonAnchura() {
         return pokemonAnchura;
     }
