@@ -50,7 +50,7 @@ public class Pokemon {
             botonPulsar = AudioSystem.getClip();
             botonPulsar.open(AudioSystem.getAudioInputStream(getClass().getResource("button.wav")));
             word = AudioSystem.getClip();
-            word.open(AudioSystem.getAudioInputStream(getClass().getResource("buttonword.wav")));
+            word.open(AudioSystem.getAudioInputStream(getClass().getResource("word.wav")));
         } catch (Exception ex) {
         }
         

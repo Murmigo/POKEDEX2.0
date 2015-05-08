@@ -230,6 +230,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 0, 0));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -544,10 +545,12 @@ public class VentanaPokedex extends javax.swing.JFrame {
            letra = 'C';   
        }
        jLabel5.setText(""+letra);
+       suenaBeep();
        contadorABC = contadoresACero(contadorABC);
     }//GEN-LAST:event_jButton3ActionPerformed
 //BOTON DE INTRO
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        suenaBeep();
         if(numeroLetras_contador == 0){
             numeroLetras_contador++;
             jLabel4.setText(jLabel5.getText());
@@ -713,6 +716,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
        numeroLetras_contador = contadoresACero(0);
        jLabel4.setText("POKÉMON");
        jLabel5.setText("");
+       suenaBeep();
     }//GEN-LAST:event_jButton14ActionPerformed
 //CRUCETA ARRIBA
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
@@ -752,12 +756,14 @@ public class VentanaPokedex extends javax.swing.JFrame {
             jLabel4.setText("POKÉMON");
         }else 
             jLabel4.setText("NO ENCONTRADO");
-            numeroLetras_contador = 0;
-        
+        numeroLetras_contador = 0;
+            
+        suenaBeep();
                 
     }//GEN-LAST:event_jButton12ActionPerformed
 //QuitarMusica
     private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
+        suenaBeep();
         if(poke.theme1.isRunning()){
             poke.theme1.setFramePosition(0);
             poke.theme1.stop();
@@ -769,8 +775,9 @@ public class VentanaPokedex extends javax.swing.JFrame {
             poke.theme1.start();
         
     }//GEN-LAST:event_jButton17ActionPerformed
-
+//PONER MUSICA
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
+      suenaBeep();
         if(poke.theme1.isRunning()){
             poke.theme1.setFramePosition(0);
             poke.theme1.stop();
