@@ -20,7 +20,7 @@ import javax.sound.sampled.LineUnavailableException;
  * @author xp
  */
 public class Pokemon {
-    public int contador = 1;
+    public int contador = 0;
     public int fila = 0;
     public int columna = 0;
     private int pokemonAnchura;

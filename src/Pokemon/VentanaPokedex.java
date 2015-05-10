@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JFrame;
 
@@ -18,7 +19,7 @@ import javax.swing.JFrame;
 
 /**
  *
- * @author jorgecisneros
+ * @author Luis Guillermo Abarca
  */
 public class VentanaPokedex extends javax.swing.JFrame {
 
@@ -43,16 +44,18 @@ public class VentanaPokedex extends javax.swing.JFrame {
     
     //hashmap para almacenar el resultado
     HashMap<String,PokemonValues> listaPokemon = new HashMap();
-    
+    //instancia global
     Pokemon poke = new Pokemon();
     /**
      * Creates new form VentanaPokedex
      */
     public VentanaPokedex() {
         initComponents();
+        //Poner fondo rojo, se contempla la imagen de la pokedex del fondo? PD:Espacios en blanco y falta de tiempo, mejor no
         getContentPane().setBackground(Color.RED);
+        //Poner un marco para el jPanel. PD: No quedaba nunca centrado mejor sin él PD2: Intentar implementar en 3.0
         
- 
+ //Musica, empezara a sonar theme1
         poke.theme1.loop(1000);
         poke.theme1.start();
 
@@ -78,34 +81,42 @@ public class VentanaPokedex extends javax.swing.JFrame {
             }
         }
         catch (Exception e){
+            System.err.println("No hay Conexion por: " +e);
         }
         
         
         /////////////////////////////////////////////
     }
-
+//Busca si el pokemon tiene alguna evolucion, se produce fallo al BUSCAR un pokemon sin evolución
     private int buscarEvolucion(PokemonValues pk)
     {
         int contador= 0;
+        //Almacenamos las posiciones de sus evoluciones en un array list por si se usan más tarde las demás, en principio solo mostrara la ultima de la lista
+        ArrayList<Integer> listaEvoluciones = new ArrayList<Integer>();
         boolean encontrado = false;
         PokemonValues pkm = new PokemonValues();
-         
-         while(encontrado == false && contador< 649)
+         //mas generico? usar listapokemon.size()?  PD: ERROR, la base de datos esta incompleta. 
+         while(!encontrado && contador< 649)
         {
             pkm = listaPokemon.get(String.valueOf(contador));
             if(pkm!=null){
+                //Los encontraremos por el evolution_id y excluiremos a si mismo por el nombre
                 if(pk.evolution_chain_id == pkm.evolution_chain_id && !pk.nombre.equalsIgnoreCase(pkm.nombre)){
-                    encontrado = true;
+                    listaEvoluciones.add(contador);
+                    contador++;
                 }
                 else
                     contador++;
             }else 
                 contador++;
         }
-             
-         return contador-1;
+         //Dos casos: con evolucion y sin ella
+        if(listaEvoluciones.size()== 0 )
+                 return poke.contador-1;
+         else
+         return listaEvoluciones.get(listaEvoluciones.size()-1)-1;
     }
-    private void dibujaPokemon(){
+    private void dibujaPokemon(){//Necesitamos la altura y la anchura del jPanel: por si hace un resize
     Graphics2D g2 = (Graphics2D) jPanel1.getGraphics();
     g2.setColor(Color.BLACK);
     g2.fillRect(0,0,jPanel1.getWidth(),jPanel1.getHeight());
@@ -115,7 +126,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
     //jPanel1.setBorder(null);
     }
     private void dibujaEvolucion(Pokemon evo)
-    {
+    {//evo?_En principio se puede hacer con poke, pero ponemos una variable local mejor para no liarnos
     Graphics2D g2 = (Graphics2D) jPanel3.getGraphics();
     g2.setColor(Color.BLACK);
     g2.fillRect(0,0,jPanel3.getWidth(),jPanel3.getHeight());
@@ -124,11 +135,11 @@ public class VentanaPokedex extends javax.swing.JFrame {
     evo.dibujaEvo(g2);
     }
     @Override
-    public void paint(Graphics g){
+    public void paint(Graphics g){//LLamaremos a dibujaPokemon, encontrado aqui el fallo al iniciar el programa
     super.paintComponents(g);
-    dibujaPokemon();
+    //dibujaPokemon();
     }
-    private void mostrarPokemon(int numeroPokemon){
+    private void mostrarPokemon(int numeroPokemon){ //Muestra por pantalla todo lo que tiene que ver con datos e imagenes
         poke.setFila((numeroPokemon) / 31);
         poke.setColumna((numeroPokemon) %31);
         dibujaPokemon();
@@ -138,13 +149,17 @@ public class VentanaPokedex extends javax.swing.JFrame {
            muestraDatosPokemon(pkm);
            poke.setFila( buscarEvolucion(pkm) /31);
            poke.setColumna( buscarEvolucion(pkm) %31);
-           dibujaEvolucion(poke);  
+           dibujaEvolucion(poke); 
         }
-        else
+        else{
             muestraNoEncontrado();
+            Graphics2D g2 = (Graphics2D) jPanel3.getGraphics();
+            g2.setColor(Color.BLACK);
+            g2.fillRect(0,0,jPanel3.getWidth(),jPanel3.getHeight());
+        }
     }
     private void muestraNoEncontrado()
-    {
+    {//Muestra Vacios
        jLabel3.setText("NOT FOUND");
        jLabel6.setText("SPECIE: NOT FOUND");
        jLabel7.setText("HEIGHT: NOT FOUND");
@@ -153,20 +168,20 @@ public class VentanaPokedex extends javax.swing.JFrame {
        
     }
     private void muestraDatosPokemon(PokemonValues pkm)
-    {
+    {//Muestra los datos
        jLabel3.setText(""+pkm.nombre);
        jLabel7.setText("SPECIE:         "+pkm.species);
-       jLabel8.setText("HEIGHT:         "+pkm.height +" m");
-       jLabel9.setText("WEIGHT:         "+pkm.weight+ " g");
+       jLabel8.setText("HEIGHT:         "+pkm.height +" dm");
+       jLabel9.setText("WEIGHT:         "+pkm.weight+ " hg");
        jLabel6.setText("HABITAT:        " +pkm.habitat);
     }
-    private void compruebaLimitesListaPokemon(){
+    private void compruebaLimitesListaPokemon(){//Para que salga siempre un pokemon añadimos limites al contador
             if(poke.contador <=0)
             poke.contador= 1;
         else if(poke.contador >=650)
             poke.contador= 649;
     }
-    private int contadoresACero(int contadorUsado){
+    private int contadoresACero(int contadorUsado){//Pone los contadores a 0. ARRAY?
     contadorABC =0;
     contadorDEF =0;
     contadorGHI =0;
@@ -179,7 +194,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
     
     return contadorUsado;
     }
-    
+    //Los dos siguientes metodos se podrían resumir en uno, pero no quiero tocarlos para no fastidiar el programa el ultimo dia. simplemente se pone un Clip local
     private void suenaBoton()
     {
         poke.botonPulsar.setFramePosition(0);
@@ -229,6 +244,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 0, 0));
@@ -257,7 +273,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Showcard Gothic", 0, 16)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Nº:1");
+        jLabel1.setText("Nº:");
         jLabel1.setToolTipText("");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, 280, -1));
 
@@ -271,7 +287,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Showcard Gothic", 0, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(102, 102, 102));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("BULBASAUR");
+        jLabel3.setText("NAME");
         jLabel3.setToolTipText("");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 40, 290, -1));
 
@@ -283,7 +299,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 350, -1, -1));
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 350, 50, -1));
 
         jButton4.setBackground(new java.awt.Color(102, 153, 255));
         jButton4.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -343,7 +359,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton9ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 380, 50, -1));
+        getContentPane().add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 380, -1, -1));
 
         jButton10.setBackground(new java.awt.Color(102, 153, 255));
         jButton10.setFont(new java.awt.Font("Tahoma", 1, 8)); // NOI18N
@@ -392,7 +408,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
                 jButton13ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton13, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 380, 50, -1));
+        getContentPane().add(jButton13, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 380, -1, 20));
 
         jLabel5.setBackground(new java.awt.Color(0, 255, 0));
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -512,6 +528,15 @@ public class VentanaPokedex extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 370, -1, -1));
+
+        jLabel11.setBackground(new java.awt.Color(0, 255, 0));
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 6)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel11.setText("EVOLUTION BRANCH");
+        jLabel11.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(51, 51, 0)));
+        jLabel11.setOpaque(true);
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 480, 80, 20));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -739,7 +764,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
         boolean encontrado = false;
         String pokemonABuscar = jLabel4.getText();
         PokemonValues pkm = new PokemonValues();
-        
+        //Busca al pokemon por nombre ignorando mayus o minus
         while(encontrado == false && contador< 649)
         {
             pkm = listaPokemon.get(String.valueOf(contador));
@@ -844,6 +869,7 @@ public class VentanaPokedex extends javax.swing.JFrame {
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
